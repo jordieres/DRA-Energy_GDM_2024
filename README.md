@@ -35,5 +35,13 @@ In the **MODELING_VAXX**, the are two more folders:
 
   2. *XGBOOST_VAXX*:Script where a Extreme Gradient Boost model is built under the same conditions as the random forest model to compare the results.
 
+## Requirements
+To run the scripts and reproduce the analyses, you need to have the following R packages installed: 'readxl', 'dplyr', 'caret', 'randomForest', 'openxlsx', 'mice', 'tidyverse', and 'xgboost'.
+
+You can install these packages using the following command in R:
+
+     install.packages(c('readxl', 'dplyr','caret', 'randomForest', 'openxlsx', 'mice', 'tidyverse', 'xgboost' ))
+
+
   
 
