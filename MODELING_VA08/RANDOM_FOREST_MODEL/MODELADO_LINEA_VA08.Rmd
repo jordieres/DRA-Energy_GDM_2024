@@ -1,0 +1,207 @@
+---
+title: "MODELADO_LINEA_VA08"
+author: "MIGUEL GARCÍA DI PASQUALE"
+date: '`r Sys.Date()`'
+output:
+  word_document: default
+  html_document: default
+---
+
+
+
+
+
+```{r}
+# Limpiar el entorno
+rm(list = ls())
+
+# Cargar las librerías necesarias
+library(readxl)
+library(mice)
+library(randomForest)
+
+# Cargar los datos
+datos <- read_excel('VA08_final_final_final.xlsx')
+
+# Crear nuevas variables basadas en la producción por unidad
+datos$Tiempo_produccion_unidad <- datos$Tiempo_produccion / datos$Num_productos
+datos$Longitud_m_unidad <- datos$Longitud_m / datos$Num_productos
+datos$Peso_t_unidad <- datos$Peso_t / datos$Num_productos
+datos$Componente1kW_unidad <- datos$Componente1kW / datos$Num_productos
+datos$Componente2kW_unidad <- datos$Componente2kW / datos$Num_productos
+datos$Componente3kW_unidad <- datos$Componente3kW / datos$Num_productos
+datos$Componente4kW_unidad <- datos$Componente4kW / datos$Num_productos
+datos$Componente5kW_unidad <- datos$Componente5kW / datos$Num_productos
+datos$Componente6kW_unidad <- datos$Componente6kW / datos$Num_productos
+
+# Replicar cada fila según el valor de Num_productos
+datos <- datos[rep(row.names(datos), datos$Num_productos), ]
+rownames(datos) <- NULL
+
+# Subconjunto de los datos
+nuevos_datos <- datos[, c(8, 9, 15:17, 19, 20, 24, 34:42)]
+nuevos_datos <- subset(nuevos_datos, Componente2kW_unidad < 500 & Componente3kW_unidad < 500 & Componente4kW_unidad < 500)
+
+# Dividir los datos en conjuntos de entrenamiento y prueba
+set.seed(sample(1:200, 1))
+sel <- sample(1:nrow(nuevos_datos), round(nrow(nuevos_datos) * 0.8), replace = FALSE)
+train <- nuevos_datos[sel, ]
+test <- nuevos_datos[-sel, ]
+
+# Definir la función para entrenar y evaluar el modelo de bosque aleatorio
+train_and_evaluate <- function(train_data, test_data, target_column) {
+
+  # Preparar los datos
+  target_name <- paste0(target_column, "_unidad")
+  c_train <- train_data[, c(1:11, match(target_name, names(train_data)))]
+  c_test <- test_data[, c(1:11, match(target_name, names(test_data)))]
+  
+  # Imputar valores faltantes en los datos de entrenamiento
+  imputed_train <- mice(c_train, m = 1, maxit = 50, method = 'pmm', seed = 500)
+  c_train_imputed <- complete(imputed_train)
+  
+  # Entrenar el modelo de bosque aleatorio
+  formula <- as.formula(paste(target_name, "~ ."))
+  r_model <- randomForest(formula, data = c_train_imputed)
+  
+  # Graficar la importancia de las variables
+  varImpPlot(r_model)
+  plot(r_model)
+  
+
+  # Imputar valores faltantes en los datos de prueba
+  c_test_imputed <- complete(mice(c_test, m = 1, maxit = 50, method = 'pmm', seed = 500))
+  test_predictions <- predict(r_model, newdata = c_test_imputed)
+  
+  # Calcular MAPE
+  mape_train <- mean(abs((c_train[[target_name]] - predict(r_model)) / c_train[[target_name]]) * 100, na.rm = TRUE)
+  mape_test <- mean(abs((c_test[[target_name]] - test_predictions) / c_test[[target_name]]) * 100, na.rm = TRUE)
+  
+  return(list(model = r_model, mape_train = mape_train, mape_test = mape_test))
+}
+
+# Entrenar y evaluar los modelos para cada componente
+components <- c("Componente1kW", "Componente2kW", "Componente3kW", "Componente4kW", "Componente5kW", "Componente6kW")
+results <- lapply(components, function(comp) {
+  train_and_evaluate(train, test, comp)
+})
+
+# Mostrar los resultados
+names(results) <- components
+results
+
+```
+
+
+```{r}
+
+# Definir la función para entrenar y evaluar el modelo de bosque aleatorio
+train_and_evaluate <- function(train_data, test_data, target_column) {
+
+  # Preparar los datos
+  target_name <- paste0(target_column, "_unidad")
+  c_train <- train_data[, c(1:11, match(target_name, names(train_data)))]
+  c_test <- test_data[, c(1:11, match(target_name, names(test_data)))]
+  
+  # Imputar valores faltantes en los datos de entrenamiento
+  imputed_train <- mice(c_train, m = 1, maxit = 50, method = 'pmm', seed = 500)
+  c_train_imputed <- complete(imputed_train)
+  
+  # Entrenar el modelo de bosque aleatorio
+  formula <- as.formula(paste(target_name, "~ ."))
+  r_model <- randomForest(formula, data = c_train_imputed)
+  
+  # Imputar valores faltantes en los datos de prueba
+  c_test_imputed <- complete(mice(c_test, m = 1, maxit = 50, method = 'pmm', seed = 500))
+  test_predictions <- predict(r_model, newdata = c_test_imputed)
+  
+  # Calcular MAPE
+  mape_train <- mean(abs((c_train[[target_name]] - predict(r_model)) / c_train[[target_name]]) * 100, na.rm = TRUE)
+  mape_test <- mean(abs((c_test[[target_name]] - test_predictions) / c_test[[target_name]]) * 100, na.rm = TRUE)
+  
+  return(list(model = r_model, mape_train = mape_train, mape_test = mape_test))
+}
+
+# Entrenar y evaluar los modelos para cada componente
+components <- c("Componente1kW", "Componente2kW", "Componente3kW", "Componente4kW", "Componente5kW", "Componente6kW")
+results <- lapply(components, function(comp) {
+  train_and_evaluate(train, test, comp)
+})
+
+# Mostrar los resultados
+names(results) <- components
+
+# Crear un data frame para los MAPE de prueba
+mape_data <- data.frame(
+  Componente = components,
+  MAPE = sapply(results, function(res) res$mape_test)
+)
+
+# Graficar los MAPE de prueba por componente
+ggplot(mape_data, aes(x = Componente, y = MAPE)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "MAPE del conjunto de prueba por componente",
+       x = "Componente", y = "Error absoluto porcentual (%)") +
+  theme_minimal()
+
+
+```
+
+```{r}
+# Definir la función para entrenar y evaluar el modelo de bosque aleatorio
+train_and_evaluate <- function(train_data, test_data, target_column) {
+
+  # Preparar los datos
+  target_name <- paste0(target_column, "_unidad")
+  c_train <- train_data[, c(1:11, match(target_name, names(train_data)))]
+  c_test <- test_data[, c(1:11, match(target_name, names(test_data)))]
+  
+  # Imputar valores faltantes en los datos de entrenamiento
+  imputed_train <- mice(c_train, m = 1, maxit = 50, method = 'pmm', seed = 500)
+  c_train_imputed <- complete(imputed_train)
+  
+  # Entrenar el modelo de bosque aleatorio
+  formula <- as.formula(paste(target_name, "~ ."))
+  r_model <- randomForest(formula, data = c_train_imputed)
+  
+  # Imputar valores faltantes en los datos de prueba
+  c_test_imputed <- complete(mice(c_test, m = 1, maxit = 50, method = 'pmm', seed = 500))
+  test_predictions <- predict(r_model, newdata = c_test_imputed)
+  
+  # Calcular errores para cada observación
+  test_errors <- c_test[[target_name]] - test_predictions
+  
+  # Calcular MAPE
+  mape_train <- mean(abs((c_train[[target_name]] - predict(r_model)) / c_train[[target_name]]) * 100, na.rm = TRUE)
+  mape_test <- mean(abs((c_test[[target_name]] - test_predictions) / c_test[[target_name]]) * 100, na.rm = TRUE)
+  
+  return(list(model = r_model, mape_train = mape_train, mape_test = mape_test, test_errors = test_errors))
+}
+
+# Entrenar y evaluar los modelos para cada componente
+components <- c("Componente1kW", "Componente2kW", "Componente3kW", "Componente4kW", "Componente5kW", "Componente6kW")
+results <- lapply(components, function(comp) {
+  train_and_evaluate(train, test, comp)
+})
+
+# Mostrar los resultados
+names(results) <- components
+
+# Crear un data frame para los errores de prueba
+error_data_long <- data.frame(
+  Componente = rep(components, each = length(results[[1]]$test_errors)),
+  Error = unlist(lapply(results, function(res) res$test_errors))
+)
+
+# Agregar un índice para representar las observaciones
+error_data_long$Observacion <- 1:nrow(error_data_long)
+
+# Graficar los errores de prueba
+ggplot(error_data_long, aes(x = Observacion, y = Error, group = Componente, color = Componente)) +
+  geom_line() +
+  labs(title = "Errores del conjunto de prueba por observación y componente",
+       x = "Observación", y = "Error de Predicción (kW)") +
+  theme_minimal()
+```
+

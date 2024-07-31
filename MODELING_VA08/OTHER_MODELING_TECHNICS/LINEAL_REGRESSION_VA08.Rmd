@@ -1,0 +1,56 @@
+---
+title: "REGRESION_LINEAL"
+author: "MIGUEL GARCÍA DI PASQUALE"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r}
+rm(list = ls())
+library(readxl)
+datos = read_excel('VA08_final_final_final.xlsx')
+datos$Tiempo_produccion_unidad <- datos$Tiempo_produccion / datos$Num_productos
+datos$Longitud_m_unidad <- datos$Longitud_m / datos$Num_productos
+datos$Peso_t_unidad <- datos$Peso_t / datos$Num_productos
+datos$Componente1kW_unidad <- datos$Componente1kW / datos$Num_productos
+datos$Componente2kW_unidad <- datos$Componente2kW / datos$Num_productos
+datos$Componente3kW_unidad <- datos$Componente3kW / datos$Num_productos
+datos$Componente4kW_unidad <- datos$Componente4kW / datos$Num_productos
+datos$Componente5kW_unidad <- datos$Componente5kW / datos$Num_productos
+datos$Componente6kW_unidad <- datos$Componente6kW / datos$Num_productos
+datos$Forma=factor(datos$Forma)
+datos$Recocido=factor(datos$Recocido)
+datos$Reduccion=factor(datos$Reduccion)
+datos$Recubrimiento=factor(datos$Recubrimiento)
+# Replicar cada fila según el valor de Num_productos
+datos <- datos[rep(row.names(datos), datos$Num_productos), ]
+rownames(datos) <- NULL
+
+# Subconjunto de los datos
+nuevos_datos <- datos[, c(8, 9, 15:17, 19, 20, 24, 34:42)]
+nuevos_datos <- subset(nuevos_datos, Componente2kW_unidad < 500 & Componente3kW_unidad < 500 & Componente4kW_unidad < 500)
+
+set.seed(sample(1:200, 1))
+sel <- sample(1:nrow(nuevos_datos), round(nrow(nuevos_datos) * 0.8), replace = FALSE)
+train <- nuevos_datos[sel, ]
+test <- nuevos_datos[-sel, ]
+```
+
+
+```{r}
+componente = c('Componente1kW_unidad','Componente2kW_unidad','Componente3kW_unidad','Componente4kW_unidad','Componente5kW_unidad','Componente6kW_unidad')
+
+for (i in componente) {
+  formula <- as.formula(paste(i, "~ Espesor_mm+Ancho_mm+parametroA+parametroB+parametroC+parametroE+parametroF+parametroI+Tiempo_produccion_unidad+Longitud_m_unidad+Peso_t_unidad"))
+
+  mod = lm(formula, data = train)
+  print(summary(step(mod)))
+}
+
+```
+
+
+
+
+
+
