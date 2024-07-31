@@ -35,13 +35,28 @@ In the **MODELING_VAXX**, the are two more folders:
 
   2. *XGBOOST_VAXX*:Script where a Extreme Gradient Boost model is built under the same conditions as the random forest model to compare the results.
 
-## Requirements
-To run the scripts and reproduce the analyses, you need to have the following R packages installed: 'readxl', 'dplyr', 'caret', 'randomForest', 'openxlsx', 'mice', 'tidyverse', and 'xgboost'.
+## Usage
+
+**Requirements**
+
+R version 4.4.0
+
+**Installation**
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/jordieres/DRA-Energy_GDM_2024.git
+cd DRA-Energy_GDM_2024
+```   
+3. Dowland code folders.
+4. To run the scripts and reproduce the analyses, you need to have the following R packages installed: 'readxl', 'dplyr', 'caret', 'randomForest', 'openxlsx', 'mice', 'tidyverse', and 'xgboost'.
 
 You can install these packages using the following command in R:
 
-     install.packages(c('readxl', 'dplyr','caret', 'randomForest', 'openxlsx', 'mice', 'tidyverse', 'xgboost' ))
-
+```r
+install.packages(c('readxl', 'dplyr','caret', 'randomForest', 'openxlsx', 'mice', 'tidyverse', 'xgboost' ))
+```
 
   
 
