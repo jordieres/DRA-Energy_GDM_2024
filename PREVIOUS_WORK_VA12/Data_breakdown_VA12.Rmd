@@ -1,0 +1,591 @@
+---
+title: "DESGLOSE_DATOS"
+author: "MIGUEL GARCÍA DI PASQUALE"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r}
+rm(list = ls())
+library(readxl)
+datos = read_excel('VA12_final.xlsx')
+head(datos)
+```
+
+```{r}
+datos$Forma=factor(datos$Forma)
+datos$Recocido=factor(datos$Recocido)
+datos$Reduccion=factor(datos$Reduccion)
+datos$Recubrimiento=factor(datos$Recubrimiento)
+levels(datos$Forma)
+```
+#TABLAS GENERALES
+```{r}
+# Filtrar los datos por las diferentes formas
+coil = datos[datos$Forma == 'Coil', ]
+sheet = datos[datos$Forma == 'Sheet', ]
+strip = datos[datos$Forma == 'Strip', ]
+
+# Crear una lista con los data frames filtrados
+formas = list(coil = coil, sheet = sheet, strip = strip)
+
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(formas)){
+  cantidad_productos[[elemento]] = sum(formas[[elemento]]$Num_productos)
+}
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+```
+
+```{r}
+# Filtrar los datos por las diferentes formas
+continuo = subset(datos, Recocido=='Continuous Annealing') 
+campana = subset(datos, Recocido=='Batch Annealing') 
+
+# Crear una lista con los data frames filtrados
+recocidos = list(continuo = continuo, campana = campana)
+
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(recocidos)){
+  cantidad_productos[[elemento]] = sum(recocidos[[elemento]]$Num_productos)
+}
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+```
+
+
+```{r}
+# Filtrar los datos por las diferentes formas
+doble = subset(datos, Reduccion=='Double Reduction') 
+simple = subset(datos, Reduccion=='Single Reduction') 
+
+# Crear una lista con los data frames filtrados
+reducciones = list(doble  = doble , simple = simple)
+
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(reducciones)){
+  cantidad_productos[[elemento]] = sum(reducciones[[elemento]]$Num_productos)
+}
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+```
+
+
+```{r}
+# Filtrar los datos por las diferentes formas
+estaño = subset(datos, Recubrimiento=='Tin-coated') 
+otro = subset(datos, !(Recubrimiento=='Tin-coated')) 
+
+# Crear una lista con los data frames filtrados
+recubrimientos = list(estaño  = estaño , otro = otro)
+
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(recubrimientos)){
+  cantidad_productos[[elemento]] = sum(recubrimientos[[elemento]]$Num_productos)
+}
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+```
+
+```{r}
+
+continuo_coil = subset(coil, Recocido=='Continuous Annealing') 
+campana_coil = subset(coil, Recocido=='Batch Annealing')
+
+recocidos_coil=list(continuo_coil=continuo_coil,campana_coil=campana_coil)
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(recocidos_coil)){
+  cantidad_productos[[elemento]] = sum(recocidos_coil[[elemento]]$Num_productos)
+}
+
+
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+
+continuo_sheet = subset(sheet, Recocido=='Continuous Annealing') 
+campana_sheet = subset(sheet, Recocido=='Batch Annealing')
+
+recocidos_sheet=list(continuo_sheet=continuo_sheet,campana_sheet=campana_sheet)
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(recocidos_sheet)){
+  cantidad_productos[[elemento]] = sum(recocidos_sheet[[elemento]]$Num_productos)
+}
+
+
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+
+
+
+continuo_strip = subset(strip, Recocido=='Continuous Annealing') 
+campana_strip = subset(strip, Recocido=='Batch Annealing')
+
+recocidos_strip=list(continuo_strip=continuo_strip,campana_strip=campana_strip)
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(recocidos_strip)){
+  cantidad_productos[[elemento]] = sum(recocidos_strip[[elemento]]$Num_productos)
+}
+
+
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+
+```
+
+
+```{r}
+# Filtrar los datos por las diferentes formas
+doble_coil = subset(coil, Reduccion=='Double Reduction') 
+simple_coil = subset(coil, Reduccion=='Single Reduction') 
+
+# Crear una lista con los data frames filtrados
+reducciones_coil = list(doble_coil  = doble_coil , simple_coil = simple_coil)
+
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(reducciones_coil)){
+  cantidad_productos[[elemento]] = sum(reducciones_coil[[elemento]]$Num_productos)
+}
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+
+# Filtrar los datos por las diferentes formas
+doble_sheet = subset(sheet, Reduccion=='Double Reduction') 
+simple_sheet = subset(sheet, Reduccion=='Single Reduction') 
+
+# Crear una lista con los data frames filtrados
+reducciones_sheet = list(doble_sheet  = doble_sheet , simple_sheet = simple_sheet)
+
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(reducciones_sheet)){
+  cantidad_productos[[elemento]] = sum(reducciones_sheet[[elemento]]$Num_productos)
+}
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+
+# Filtrar los datos por las diferentes formas
+doble_strip = subset(strip, Reduccion=='Double Reduction') 
+simple_strip = subset(strip, Reduccion=='Single Reduction') 
+
+# Crear una lista con los data frames filtrados
+reducciones_strip = list(doble_strip  = doble_strip , simple_strip = simple_strip)
+
+# Inicializar una lista para almacenar la cantidad de productos
+cantidad_productos = list()
+
+# Iterar sobre los elementos de la lista 'formas'
+for(elemento in names(reducciones_strip)){
+  cantidad_productos[[elemento]] = sum(reducciones_strip[[elemento]]$Num_productos)
+}
+
+# Mostrar la cantidad de productos por forma
+cantidad_productos = as.data.frame(cantidad_productos)
+head(cantidad_productos)
+```
+#PLOT CONSUMO
+
+```{r}
+
+consumos = colnames(datos)[27:33]
+for(elemento in names(formas)){
+
+    for(i in consumos){
+    a =  (formas[[elemento]][[i]])/(formas[[elemento]]$Num_productos)
+    plot(a, main = paste(i, "del producto",elemento), xlab = "Observación", ylab = i)
+    
+  }
+}
+```
+```{r}
+variables <- c("Componente2kW/Num_productos","Componente7kW/Num_productos")
+umbrales <- c(3000, 2000)
+resultados <- numeric(length(variables))
+
+for (i in seq_along(variables)) {
+  # Divide los nombres de las columnas
+  columnas <- strsplit(variables[i], "/")[[1]]
+  columna_numerador <- columnas[1]
+  columna_denominador <- columnas[2]
+  
+  # Calcula la división de las columnas
+  datos$division <- datos[[columna_numerador]] / datos[[columna_denominador]]
+  
+  # Filtra las observaciones con la condición
+  observaciones <- subset(datos, division < umbrales[i])
+  resultados[i] <- sum(observaciones[[columna_denominador]])
+}
+
+# Imprimir resultados
+for (i in seq_along(variables)) {
+  cat("De los productos,", resultados[i], "tienen", variables[i], "<", umbrales[i], "\n")
+}
+
+intersecciones <- matrix(0, nrow = length(variables), ncol = length(variables))
+
+for (i in seq_along(variables)) {
+  for (j in seq_along(variables)) {
+    if (i < j) {
+      columnas_i <- strsplit(variables[i], "/")[[1]]
+      columna_numerador_i <- columnas_i[1]
+      columna_denominador_i <- columnas_i[2]
+      
+      columnas_j <- strsplit(variables[j], "/")[[1]]
+      columna_numerador_j <- columnas_j[1]
+      columna_denominador_j <- columnas_j[2]
+      
+      datos$division_i <- datos[[columna_numerador_i]] / datos[[columna_denominador_i]]
+      datos$division_j <- datos[[columna_numerador_j]] / datos[[columna_denominador_j]]
+      
+      observaciones <- subset(datos, division_i < umbrales[i] & division_j < umbrales[j])
+      intersecciones[i, j] <- sum(observaciones[[columna_denominador_i]])
+    }
+  }
+}
+
+# Imprimir intersecciones
+for (i in seq_along(variables)) {
+  for (j in seq_along(variables)) {
+    if (i < j) {
+      cat("De los productos que tienen", variables[i], "<", umbrales[i], ",", intersecciones[i, j], "tienen", variables[j], "<", umbrales[j], "\n")
+    }
+  }
+}
+
+```
+
+Viendo esto, puedo crear un subset de la siguiente forma:
+
+```{r}
+dat <- subset(datos, (Componente2kW/Num_productos) < 3000 &  (Componente7kW/Num_productos) < 2000)
+
+# Filtrar los datos por las diferentes formas
+coil2 = dat[dat$Forma == 'Coil', ]
+sheet2 = dat[dat$Forma == 'Sheet', ]
+strip2 = dat[dat$Forma == 'Strip', ]
+
+# Crear una lista con los data frames filtrados
+formas2 = list(coil2 = coil2, sheet2 = sheet2, strip2 = strip2)
+
+cons <- names(dat)[c(28,33)]
+
+
+
+for(elemento in names(formas2)){
+
+    for(i in cons){
+    a =  (formas2[[elemento]][[i]])/(formas2[[elemento]]$Num_productos)
+    plot(a, main = paste(i, "del producto",elemento), xlab = "Observación", ylab = i)
+    
+  }
+}
+
+```
+
+#MEDIA DEL CONSUMO SEGÚN LA FORMA
+
+```{r}
+# Seleccionar los nombres de las columnas de consumo
+consumos = colnames(dat)[27:33]
+
+# Iterar sobre los nombres de los elementos en la lista 'formas'
+for (nombre_forma in names(formas)) {
+  cat("Consumo medio para la forma", nombre_forma, "por unidad es:\n")
+  
+  # Obtener el data frame correspondiente a la forma
+  forma = formas[[nombre_forma]]
+  
+  # Iterar sobre las columnas de consumo
+  for (consumo in consumos) {
+    # Calcular el consumo medio
+    mean_consumption = mean(forma[[consumo]] / forma$Num_productos, na.rm = TRUE)
+    
+    # Imprimir el consumo medio
+    cat(paste("- El consumo medio para", consumo, "es:", mean_consumption, "\n"))
+  }
+  
+  cat("\n")
+}
+```
+
+#BOXPLOT CONSUMO-FORMA
+
+```{r}
+# Seleccionar las columnas de los componentes
+componentes <- datos[, 27:33]
+
+# Iterar sobre cada componente y crear boxplots
+for (componente in colnames(componentes)) {
+  boxplot((componentes[[componente]] / datos$Num_productos) ~ datos$Forma, main = paste("Boxplot de", componente, "por Forma"), xlab='Forma', ylab = componente, col = rainbow(4))
+}
+```
+
+
+
+```{r}
+componentes2 = dat[,c(28,33)]
+
+for (i in colnames(componentes2)) {
+  boxplot((componentes2[[i]] / dat$Num_productos) ~ dat$Forma, main = paste("Boxplot de", i, "por Forma"), xlab='Forma', ylab = i, col = rainbow(4))
+}
+
+```
+
+#MEDIA DE CONSUMO SEGÚN EL TIPO DE RECOCIDO
+
+```{r}
+
+
+
+for (nombre_recocido in names(recocidos)) {
+  cat("Consumo medio para el recocido", nombre_recocido, "por unidad es:\n")
+  
+  
+  recocido = recocidos[[nombre_recocido]]
+  
+
+  for (consumo in consumos) {
+   
+    mean_consumption = mean(recocido[[consumo]] / recocido$Num_productos, na.rm = TRUE)
+    
+   
+    cat(paste("- El consumo medio para", consumo, "es:", mean_consumption, "\n"))
+  }
+  
+  cat("\n")
+}
+
+```
+
+#BOXPLOT CONSUMO-RECOCIDO
+
+```{r}
+# Iterar sobre cada componente y crear boxplots
+for (componente in colnames(componentes)) {
+  boxplot((componentes[[componente]] / datos$Num_productos) ~ datos$Recocido, main = paste("Boxplot de", componente, "por Recocido"), xlab='Recocido', ylab = componente, col = rainbow(4))
+}
+```
+
+
+#MEDIA DE COSNUMO SEGÚN EL TIPO DE REDUCCIÓN
+
+```{r}
+
+for (nombre_reduccion in names(reducciones)) {
+  cat("Consumo medio para la reducción", nombre_reduccion, "por unidad es:\n")
+  
+  
+  reduccion = reducciones[[nombre_reduccion]]
+  
+
+  for (consumo in consumos) {
+   
+    mean_consumption = mean(reduccion[[consumo]] / reduccion$Num_productos, na.rm = TRUE)
+    
+   
+    cat(paste("- El consumo medio para", consumo, "es:", mean_consumption, "\n"))
+  }
+  
+  cat("\n")
+}
+
+```
+
+#BOXPLOT REDUCCION-CONSUMO
+
+```{r}
+# Iterar sobre cada componente y crear boxplots
+for (componente in colnames(componentes)) {
+  boxplot((componentes[[componente]] / datos$Num_productos) ~ datos$Reduccion, main = paste("Boxplot de", componente, "por Reducción"), xlab='Reduccion', ylab = componente, col = rainbow(4))
+}
+```
+
+#ESTUDIO PARÁMETROS
+
+```{r}
+params <- names(dat[, 17:26])
+for (i in params) {
+  barplot(dat[[i]], main = i)
+}
+```
+
+
+#CORRELACIONES CUANTITATIVAS
+
+```{r}
+library(corrplot)
+
+
+# Genera el gráfico de correlación
+corrplot(cor(dat[,c(4,5,7:33)]), method = 'ellipse')
+
+```
+
+Se observa que las variables más relacionadas con los consumos son:
+
+1.  Tiempo_produccion
+
+2.  Num.productos
+
+3.  Longitud
+
+4.  Peso
+
+5.  Las propias componentes de consumo de otras secciones, salvo la 7.
+
+Por otro lado, se observa que el resto de variables tienen una correlación muy baja, no solo con las componentes de consumo, sino también con las variables anteriores, lo cual nos indica que no tienen gran influencia ni directa ni indirectamente sobre el consumo.
+
+#TIPO DE CORRELACIÓN DE LAS VARIABLES CUANTITATIVAS
+
+```{r}
+vars = names(datos[,c(4,10,11)])
+consumos = names(datos[,c(27:33)])
+for(i in vars){
+  for (j in consumos) {
+    a = (datos[[i]]/datos$Num_productos)
+    b = (datos[[j]]/datos$Num_productos)
+    plot(a,b, main = paste("Gráfico de dispersión entre", i, "y", j), xlab = paste(i), ylab = paste(j))
+  }
+}
+  
+```
+
+
+```{r}
+
+
+for(i in vars){
+  for (j in cons) {
+    a = (dat[[i]]/dat$Num_productos)
+    b = (dat[[j]]/dat$Num_productos)
+    plot(a,b, main = paste("Gráfico de dispersión entre", i, "y", j), xlab = paste(i), ylab = paste(j))
+  }
+}
+b = dat$Componente1kW+dat$Componente2kW+dat$Componente3kW+dat$Componente4kW+dat$Componente5kW+dat$Componente6kW+dat$Componente7kW
+for(i in vars){
+    a = (dat[[i]]/dat$Num_productos)
+    b = b*((dat$Tiempo_produccion/dat$Num_productos)/60)/dat$Num_productos
+    plot(a,b, main = paste("Gráfico de dispersión entre", i, "y consumo total"), xlab = paste(i), ylab = 'Consumo_total (kWh)')
+
+}
+
+  for (j in cons) {
+    a = (dat$Peso_t/dat$Num_productos)
+    b = (dat[[j]]/dat$Num_productos)
+    plot(a,b, main = paste("Gráfico de dispersión entre masa y", j), xlab = 'Masa (t)', ylab = paste(j))
+  }
+b = dat$Componente1kW+dat$Componente2kW+dat$Componente3kW+dat$Componente4kW+dat$Componente5kW+dat$Componente6kW+dat$Componente7kW
+
+a = (dat$Peso_t/dat$Num_productos)
+b = b*((dat$Tiempo_produccion/dat$Num_productos)/60)/dat$Num_productos
+plot(a,b, main = paste("Gráfico de dispersión entre masa y consumo total"), xlab = 'Masa (t)', ylab = 'Consumo_total (kWh)')
+
+```
+
+
+```{r}
+a = (datos$Tiempo_produccion/datos$Num_productos)
+b = (datos$Longitud_m/datos$Num_productos)
+plot(b~a, main= "Tiempo de producción vs Longitud", ylab = "Tiempo de producción(min)", xlab = "Longitud")
+plot(datos$Velocidad, main="Velocidad", xlab = "Observacion", ylab = "m/min")
+```
+
+```{r}
+mean(datos$Longitud_m/datos$Tiempo_produccion)
+mean(datos$Velocidad)
+```
+
+
+
+```{r}
+  for (j in consumos) {
+    a = (datos$Velocidad)
+    b = (datos[[j]]/datos$Num_productos)
+    plot(a,b, main = paste("Gráfico de dispersión entre Velocidad y", j), xlab = "m/min", ylab = paste(j))
+  }
+```
+
+```{r}
+  for (j in cons) {
+    a = (dat$Velocidad)
+    b = (dat[[j]]/dat$Num_productos)
+    plot(a,b, main = paste("Gráfico de dispersión entre Velocidad y", j), xlab = "m/min", ylab = paste(j))
+  }
+```
+
+
+
+
+#HISTOGRAMAS Y DISTRIBUCIONES 
+El siguiente paso es estudiar la distribución de las componentes de consumos y de las variables importantes. Además, habrá que calcular los diferentes estadísticos.
+
+```{r}
+variable = names(datos[,c(27:33)])
+for (i in variable){
+  hist((datos[[i]]/datos$Num_productos),main = i, xlab = 'kW')
+  dat3 = datos[[i]]/datos$Num_productos
+
+densidad = density(dat3)
+plot(densidad, main = i, xlab = "Valor", ylab = "Densidad")
+}
+
+hist(datos$Velocidad, main = "Velocidad",xlab = "m/min")
+densidad = density(datos$Velocidad)
+plot(densidad, main = "Velocidad", xlab = "m/min")
+
+hist(datos$Tiempo_produccion/datos$Num_productos, main = "Tiempo_produccion",xlab = "min")
+densidad = density(datos$Tiempo_produccion/datos$Num_productos)
+plot(densidad, main = "Tiempo_produccion", xlab = "min")
+
+hist(datos$Longitud_m/datos$Num_productos, main = "Longitud_m",xlab = "m")
+densidad = density(datos$Longitud_m/datos$Num_productos)
+plot(densidad, main = "Longitud_m", xlab = "m")
+
+hist(datos$Peso_t/datos$Num_productos, main = "Peso_t",xlab = "toneladas")
+densidad = density(datos$Peso_t/datos$Num_productos)
+plot(densidad, main = "Peso_t", xlab = "toneladas")
+```
+
+
+
+
