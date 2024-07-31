@@ -58,5 +58,10 @@ You can install these packages using the following command in R:
 install.packages(c('readxl', 'dplyr','caret', 'randomForest', 'openxlsx', 'mice', 'tidyverse', 'xgboost' ))
 ```
 
+## Contributing
+Contributions are welcome.
+
+## Acknowledgments:
+Thanks to Joaquín Bienvenido Ordieres Meré for monitoring and tutoring me on this project.
   
 
