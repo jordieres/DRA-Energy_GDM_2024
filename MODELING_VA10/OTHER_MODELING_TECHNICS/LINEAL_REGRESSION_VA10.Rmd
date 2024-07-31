@@ -1,0 +1,49 @@
+---
+title: "REGRESION_LINEAL_VA10"
+author: "MIGUEL GARCÍA DI PASQUALE"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r}
+rm(list = ls())
+library(readxl)
+datos = read_excel('VA10_final.xlsx')
+datos$Tiempo_produccion_unidad = datos$Tiempo_produccion / datos$Num_productos
+datos$Longitud_m_unidad = datos$Longitud_m / datos$Num_productos
+datos$Peso_t_unidad = datos$Peso_t / datos$Num_productos
+datos$Componente1kW_unidad = datos$Componente1kW / datos$Num_productos
+datos$Componente2kW_unidad = datos$Componente2kW / datos$Num_productos
+datos$Componente3kW_unidad = datos$Componente3kW / datos$Num_productos
+datos$Componente4kW_unidad = datos$Componente4kW / datos$Num_productos
+datos$Forma=factor(datos$Forma)
+datos$Recocido=factor(datos$Recocido)
+datos$Reduccion=factor(datos$Reduccion)
+datos$Recubrimiento=factor(datos$Recubrimiento)
+# Replicate each row according to the value of Num_productos
+datos <- datos[rep(row.names(datos), datos$Num_productos), ]
+rownames(datos) <- NULL
+nuevos_datos = datos[, c(8, 9, 17:26, 34:40)]
+nuevos_datos <- subset(nuevos_datos, Componente4kW_unidad < 2500)
+
+seed <- sample(1:200, 1)
+set.seed(seed)
+sel = sample(1:nrow(nuevos_datos), round(nrow(nuevos_datos) * .8), replace = FALSE)
+train = nuevos_datos[sel, ]
+test  = nuevos_datos[-sel, ]
+```
+
+```{r}
+
+componente = c('Componente1kW_unidad','Componente2kW_unidad','Componente3kW_unidad','Componente4kW_unidad')
+
+for (i in componente) {
+  formula <- as.formula(paste(i, "~ Espesor_mm+Ancho_mm+parametroA+parametroB+parametroC+parametroE+parametroF+parametroI+Tiempo_produccion_unidad+Longitud_m_unidad+Peso_t_unidad"))
+
+  mod = lm(formula, data = train)
+  print(summary(step(mod)))
+}
+
+```
+```
+

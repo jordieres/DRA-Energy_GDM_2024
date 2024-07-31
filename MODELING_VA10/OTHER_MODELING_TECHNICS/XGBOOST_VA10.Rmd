@@ -1,0 +1,110 @@
+---
+title: "XGBOOST_VA10"
+author: "MIGUEL GARCÍA DI PASQUALE"
+date: "`r Sys.Date()`"
+output: word_document
+---
+```{r}
+rm(list = ls())
+# Cargar las librerías necesarias
+library(readxl)
+library(xgboost)
+library(tidyverse)
+library(caret)
+
+# Leer los datos
+datos = read_excel('VA10_final.xlsx')
+
+# Crear nuevas variables basadas en la producción por unidad
+datos <- datos %>%
+  mutate(
+    Tiempo_produccion_unidad = Tiempo_produccion / Num_productos,
+    Longitud_m_unidad = Longitud_m / Num_productos,
+    Peso_t_unidad = Peso_t / Num_productos,
+    Componente1kW_unidad = Componente1kW / Num_productos,
+    Componente2kW_unidad = Componente2kW / Num_productos,
+    Componente3kW_unidad = Componente3kW / Num_productos,
+    Componente4kW_unidad = Componente4kW / Num_productos
+  )
+
+# Convertir ciertas columnas a factores
+datos <- datos %>%
+  mutate(
+    Forma = factor(Forma),
+    Recocido = factor(Recocido),
+    Recubrimiento = factor(Recubrimiento),
+    Reduccion = factor(Reduccion)
+  )
+
+# Replicar cada fila según el valor de Num_productos
+datos <- datos[rep(row.names(datos), datos$Num_productos), ]
+rownames(datos) <- NULL
+
+# Filtrar datos según la condición dada
+nuevos_datos <- datos %>%
+  select(8, 9, 17:26, 34:40) %>%
+  filter(Componente4kW_unidad < 2500)
+
+# Crear una lista para almacenar los datos y matrices
+dat <- list()
+dat$nuevos_datos <- nuevos_datos
+
+# Crear subconjuntos de entrenamiento y prueba
+set.seed(1919)
+dat$train_df <- sample_frac(nuevos_datos, size = 0.7)
+dat$test_df <- setdiff(nuevos_datos, dat$train_df)
+
+# Excluir columnas de componentes y convertir en matrices para xgboost
+train_data <- dat$train_df %>% select(-c(Componente1kW_unidad, Componente2kW_unidad, Componente3kW_unidad, Componente4kW_unidad))
+test_data <- dat$test_df %>% select(-c(Componente1kW_unidad, Componente2kW_unidad, Componente3kW_unidad, Componente4kW_unidad))
+
+# Crear matrices de entrenamiento y prueba para cada componente
+dat$train_mats <- lapply(1:4, function(i) {
+  xgb.DMatrix(data = as.matrix(train_data), label = dat$train_df[[paste0("Componente", i, "kW_unidad")]])
+})
+
+dat$test_mats <- lapply(1:4, function(i) {
+  xgb.DMatrix(data = as.matrix(test_data), label = dat$test_df[[paste0("Componente", i, "kW_unidad")]])
+})
+
+# Entrenar los modelos para cada componente
+dat$modelos <- lapply(dat$train_mats, function(train_mat) {
+  xgboost(data = train_mat, 
+          objective = "reg:squarederror", 
+          nrounds = 100, 
+          max.depth = 15)
+})
+
+# Predecir con los modelos entrenados
+dat$predicciones <- mapply(function(modelo, test_mat) {
+  predict(modelo, test_mat)
+}, dat$modelos, dat$test_mats, SIMPLIFY = FALSE)
+
+# Calcular los errores de predicción
+dat$errores <- mapply(function(pred, test_mat) {
+  real <- getinfo(test_mat, "label")
+  real - pred
+}, dat$predicciones, dat$test_mats, SIMPLIFY = FALSE)
+
+# Crear un dataframe para los errores
+errores_df <- do.call(rbind, lapply(1:4, function(i) {
+  data.frame(
+    Observacion = seq_along(dat$errores[[i]]),  # Corregir la numeración continua
+    Error = dat$errores[[i]],
+    Componente = paste0("Componente", i, "kW")
+  )
+}))
+
+# Ajustar la numeración para que sea continua
+errores_df$Observacion <- 1:nrow(errores_df)
+
+# Graficar los errores
+ggplot(errores_df, aes(x = Observacion, y = Error, color = Componente)) +
+  geom_line() +
+  labs(title = "Errores del conjunto de prueba por observación y componente",
+       x = "Observación",
+       y = "Error de Predicción (kW)") +
+  theme_minimal()
+
+
+```
