@@ -2,7 +2,6 @@
 Industrial Energy forecasting in HDGL use case.
 
 This repository contains scripts and data analysis documents for Miguel Garcia's final grade thesis (TFG). It includes tools for understanding data frames from a European steel corporation, featuring data analysis and modeling code from five of its downstream production lines: 8, 9, 10, 11, and 12. Each script includes in its name the number of the production line it belongs to.
- 
 
 ## Repository-Contents
 In the **PREVIOUS_WORK_VAXX** folder:
